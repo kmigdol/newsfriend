@@ -56,7 +56,12 @@ def lambda_handler(event, context):
     print(articles)
     return {
         'statusCode': 200,
-        'body': json.dumps(articles)
+        'body': json.dumps(articles),
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST'
+        }
     }
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 
 console.log("YES LOADED POPUP");
 
+const lambdaUrl = "https://o45bmhjq3ww4s72qfz7n2drnqa0vwsjh.lambda-url.us-east-2.on.aws/"
+
 const button = document.getElementById("news-button");
 const buttonWrapper = document.getElementById("button-wrapper");
 
@@ -29,6 +31,16 @@ chrome.runtime.onMessage.addListener(
             headerNode = document.createTextNode(request.header);
             
             buttonWrapper.insertBefore(headerNode, button);
+
+            fetch(lambdaUrl, {
+                method: "POST",
+                body: JSON.stringify({}),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }).then((response) => response.json())
+              .then((json) => console.log(json));
+
             recievedHeader = true;
         }
     }
