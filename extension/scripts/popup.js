@@ -10,15 +10,13 @@ recievedHeader = false;
 
 button.addEventListener('click', () => {
     console.log("CLICKED");
-    
-    if (!recievedHeader) {
-        chrome.tabs.query({active: true, currentWindow: true}, 
-            function(tabs) {
-                console.log("SENDING MESSAGE");
-                chrome.tabs.sendMessage(tabs[0].id, {type: "getHeader"})
-            }
-        )
-    }
+
+    chrome.tabs.query({active: true, currentWindow: true}, 
+        function(tabs) {
+            console.log("SENDING MESSAGE");
+            chrome.tabs.sendMessage(tabs[0].id, {type: "getHeader"})
+        }
+    )
 });
 
 const listContainer = document.getElementById("article-list");
@@ -54,9 +52,13 @@ chrome.runtime.onMessage.addListener(
 
             fetch(lambdaUrl, {
                 method: "POST",
-                body: JSON.stringify({}),
+                body: JSON.stringify({
+                    "title": request.header
+                }),
                 headers: {
-                    "Content-type": "application/json; charset=UTF-8"
+                    "Content-Type": "application/json; charset=UTF-8",
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST'
                 }
             }).then((response) => response.json())
               .then((json) => fillInArticles(json));
@@ -65,4 +67,10 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+window.addEventListener('click',function(e){
+    if(e.target.href!==undefined){
+      chrome.tabs.create({url:e.target.href, active:false})
+    }
+  })
 

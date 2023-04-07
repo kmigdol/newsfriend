@@ -50,19 +50,25 @@ def get_articles(query: str) -> List[Article]:
     return articles
 
 def lambda_handler(event, context):
-    query = get_search_query("A ‘surreal’ day for Trump in court may only tear the country further apart")
-    print(query)
-    articles = get_articles(query)
-    print(articles)
+    print(event)
+    articles = []
+    if "body" in event:
+        body = json.loads(event["body"])
+        article = body.get("title", "Trump")
+        query = get_search_query(article)
+        print(query)
+        articles = get_articles(query)
+        print(articles)
     return {
         'statusCode': 200,
         'body': json.dumps(articles),
         'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': "*",
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'POST'
         }
     }
+    
 
 if __name__ == "__main__":
     print(lambda_handler(None, None))
