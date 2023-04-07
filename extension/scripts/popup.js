@@ -21,6 +21,24 @@ button.addEventListener('click', () => {
     }
 });
 
+const listContainer = document.getElementById("article-list");
+
+function fillInArticles(articles) {
+    console.log(articles);
+    listNode = document.createElement("ul");
+    for (let i = 0; i < articles.length; i++) {
+        article = articles[i];
+        text = document.createTextNode(article.title);
+        a = document.createElement("a");
+        a.appendChild(text);
+        a.href = article.url;
+        entry = document.createElement('li');
+        entry.appendChild(a);
+        listNode.appendChild(entry);
+    }
+    listContainer.appendChild(listNode);
+}
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log("RECIEVED MESSAGE");
@@ -39,9 +57,9 @@ chrome.runtime.onMessage.addListener(
                     "Content-type": "application/json; charset=UTF-8"
                 }
             }).then((response) => response.json())
-              .then((json) => console.log(json));
+              .then((json) => fillInArticles(json));
 
-            recievedHeader = true;
+            // recievedHeader = true;
         }
     }
 );
