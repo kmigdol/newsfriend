@@ -18,8 +18,9 @@
   },
   "content_scripts": [
     {
-        "matches": ["https://*.cnn.com/*"],
+        "matches": ["https://*.cnn.com/*", "https://*.nytimes.com/*"],
         "js": ["scripts/content.js"]
     }
-  ]
+  ],
+  "permissions": ["tabs"]
 }

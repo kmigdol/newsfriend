@@ -36,16 +36,26 @@ def get_search_query(headline: str) -> str:
     print(ret)
     return ret.json()['choices'][0]['message']['content']
 
+def _get_items(query_params: dict[str, Any]):
+    for i in range(5):
+        print(f"retry {i}")
+        ret = requests.get(GOOGLE_URL, query_params)
+        print(ret)
+
+        items = ret.json().get("items", [])
+        if len(items) > 0:
+            return items
+    return []
+
 def get_articles(query: str) -> List[Article]:
     params = {
         "key": GOOGLE_KEY,
         "cx": "04f1ed0849d3045b0",
-        "q": query
+        "q": query,
+        "num": 5
     }
-    ret = requests.get(GOOGLE_URL, params)
-    print(ret)
 
-    items = ret.json().get("items", [])
+    items = _get_items(params)
     articles = [{"title": item["title"], "url": item["link"]} for item in items]
     return articles
 

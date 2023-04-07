@@ -8,15 +8,59 @@ const buttonWrapper = document.getElementById("button-wrapper");
 
 recievedHeader = false;
 
-button.addEventListener('click', () => {
+function getArticles(articleTitle) {
+    console.log(articleTitle);
+    headerNode = document.createTextNode(articleTitle);
+    
+    if (!recievedHeader) {
+        buttonWrapper.insertBefore(headerNode, button);
+    }
+
+    fetch(lambdaUrl, {
+        method: "POST",
+        body: JSON.stringify({
+            "title": articleTitle
+        }),
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST'
+        }
+    }).then((response) => response.json())
+        .then((json) => fillInArticles(json));
+
+    recievedHeader = true;
+}
+
+async function getTitle() {
+    let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    let headerText = await tab.title
+
+    return headerText
+}
+
+button.addEventListener('click', function() {
     console.log("CLICKED");
 
-    chrome.tabs.query({active: true, currentWindow: true}, 
+    // chrome.tabs.query({active: true, currentWindow: true}, 
+    //     function(tabs) {
+    //         console.log("SENDING MESSAGE");
+    //         chrome.tabs.sendMessage(tabs[0].id, {type: "getHeader"})
+    //     }
+    // )
+
+    // getTitle().then((title) => getArticles(title))
+
+    chrome.tabs.query({ active: true, lastFocusedWindow: true },
         function(tabs) {
-            console.log("SENDING MESSAGE");
-            chrome.tabs.sendMessage(tabs[0].id, {type: "getHeader"})
+            console.log(tabs)
+            console.log(tabs[0])
+            let title = tabs[0].title
+            console.log(title)
+            getArticles(title)
         }
     )
+
 });
 
 const listContainer = document.getElementById("article-list");
@@ -43,27 +87,7 @@ chrome.runtime.onMessage.addListener(
         console.log(request);
 
         if (request.type == "sendHeader") {
-            console.log(request.header);
-            headerNode = document.createTextNode(request.header);
-            
-            if (!recievedHeader) {
-                buttonWrapper.insertBefore(headerNode, button);
-            }
-
-            fetch(lambdaUrl, {
-                method: "POST",
-                body: JSON.stringify({
-                    "title": request.header
-                }),
-                headers: {
-                    "Content-Type": "application/json; charset=UTF-8",
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST'
-                }
-            }).then((response) => response.json())
-              .then((json) => fillInArticles(json));
-
-            recievedHeader = true;
+            getArticles(request.header)
         }
     }
 );
