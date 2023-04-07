@@ -44,11 +44,13 @@ chrome.runtime.onMessage.addListener(
         console.log("RECIEVED MESSAGE");
         console.log(request);
 
-        if (request.type == "sendHeader" && !recievedHeader) {
+        if (request.type == "sendHeader") {
             console.log(request.header);
             headerNode = document.createTextNode(request.header);
             
-            buttonWrapper.insertBefore(headerNode, button);
+            if (!recievedHeader) {
+                buttonWrapper.insertBefore(headerNode, button);
+            }
 
             fetch(lambdaUrl, {
                 method: "POST",
@@ -59,7 +61,7 @@ chrome.runtime.onMessage.addListener(
             }).then((response) => response.json())
               .then((json) => fillInArticles(json));
 
-            // recievedHeader = true;
+            recievedHeader = true;
         }
     }
 );
