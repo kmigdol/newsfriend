@@ -1,5 +1,5 @@
 
-from typing import List, TypedDict
+from typing import Any, List, TypedDict
 import requests
 import json
 import os
