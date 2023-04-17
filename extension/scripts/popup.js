@@ -8,13 +8,25 @@ const buttonWrapper = document.getElementById("button-wrapper");
 
 recievedHeader = false;
 
+tabTitle = "";
+
+chrome.tabs.query({ active: true, lastFocusedWindow: true },
+    function(tabs) {
+        console.log(tabs)
+        console.log(tabs[0])
+        tabTitle = tabs[0].title
+        console.log(tabTitle)
+        headerNode = document.createTextNode(tabTitle);
+
+        if (!recievedHeader) {
+            buttonWrapper.insertBefore(headerNode, button);
+        }
+        recievedHeader = true;
+    }
+)
+
 function getArticles(articleTitle) {
     console.log(articleTitle);
-    headerNode = document.createTextNode(articleTitle);
-    
-    if (!recievedHeader) {
-        buttonWrapper.insertBefore(headerNode, button);
-    }
 
     fetch(lambdaUrl, {
         method: "POST",
@@ -29,7 +41,6 @@ function getArticles(articleTitle) {
     }).then((response) => response.json())
         .then((json) => fillInArticles(json));
 
-    recievedHeader = true;
 }
 
 async function getTitle() {
@@ -41,26 +52,7 @@ async function getTitle() {
 
 button.addEventListener('click', function() {
     console.log("CLICKED");
-
-    // chrome.tabs.query({active: true, currentWindow: true}, 
-    //     function(tabs) {
-    //         console.log("SENDING MESSAGE");
-    //         chrome.tabs.sendMessage(tabs[0].id, {type: "getHeader"})
-    //     }
-    // )
-
-    // getTitle().then((title) => getArticles(title))
-
-    chrome.tabs.query({ active: true, lastFocusedWindow: true },
-        function(tabs) {
-            console.log(tabs)
-            console.log(tabs[0])
-            let title = tabs[0].title
-            console.log(title)
-            getArticles(title)
-        }
-    )
-
+    getArticles(tabTitle)
 });
 
 const listContainer = document.getElementById("article-list");
@@ -81,16 +73,16 @@ function fillInArticles(articles) {
     listContainer.appendChild(listNode);
 }
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        console.log("RECIEVED MESSAGE");
-        console.log(request);
+// chrome.runtime.onMessage.addListener(
+//     function(request, sender, sendResponse) {
+//         console.log("RECIEVED MESSAGE");
+//         console.log(request);
 
-        if (request.type == "sendHeader") {
-            getArticles(request.header)
-        }
-    }
-);
+//         if (request.type == "sendHeader") {
+//             getArticles(request.header)
+//         }
+//     }
+// );
 
 window.addEventListener('click',function(e){
     if(e.target.href!==undefined){
