@@ -59,16 +59,15 @@ def get_articles(query: str) -> List[Article]:
     articles = [{"title": item["title"], "url": item["link"]} for item in items]
     return articles
 
-def lambda_handler(event, context):
-    print(event)
+def run_articles_lambda(event):
     articles = []
-    if "body" in event:
-        body = json.loads(event["body"])
-        article = body.get("title", "Trump")
-        query = get_search_query(article)
-        print(query)
-        articles = get_articles(query)
-        print(articles)
+    body = json.loads(event["body"])
+    assert "title" in body, ValueError("missing title")
+    article = body["title"]
+    query = get_search_query(article)
+    print(query)
+    articles = get_articles(query)
+    print(articles)
     return {
         'statusCode': 200,
         'body': json.dumps(articles),
@@ -78,7 +77,31 @@ def lambda_handler(event, context):
             'Access-Control-Allow-Methods': 'POST'
         }
     }
-    
+
+def lambda_handler(event, context):
+    print(event)
+    try:
+        run_articles_lambda(event)
+    except ValueError as e:
+        print(f"VALUE ERROR: {e}" )
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Headers': "*",
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST'
+            }
+        }
+    except Exception as e:
+        print(f"OTHER EXCEPTION {e}")
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Headers': "*",
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST'
+            }
+        } 
 
 if __name__ == "__main__":
     print(lambda_handler(None, None))
