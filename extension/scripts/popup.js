@@ -57,17 +57,32 @@ button.addEventListener('click', function() {
 
 const listContainer = document.getElementById("article-list");
 
+function getArticleEntry(article) {
+    text = document.createTextNode(article.title);
+    title = document.createElement("a");
+    title.appendChild(text);
+    title.href = article.url;
+
+    linebreak = document.createElement("br");
+
+    website = new URL(article.url);
+    domain = website.hostname;
+    domain = domain.replace('www.','');
+    domainNode = document.createTextNode(domain);
+
+    entry = document.createElement('li');
+    entry.appendChild(title);
+    entry.appendChild(linebreak);
+    entry.appendChild(domainNode);
+    return entry
+}
+
 function fillInArticles(articles) {
     console.log(articles);
     listNode = document.createElement("ul");
     for (let i = 0; i < articles.length; i++) {
         article = articles[i];
-        text = document.createTextNode(article.title);
-        a = document.createElement("a");
-        a.appendChild(text);
-        a.href = article.url;
-        entry = document.createElement('li');
-        entry.appendChild(a);
+        entry = getArticleEntry(article);
         listNode.appendChild(entry);
     }
     listContainer.appendChild(listNode);
