@@ -60,6 +60,16 @@ def get_articles(query: str) -> List[Article]:
     return articles
 
 def run_articles_lambda(event):
+    if "body" not in event:
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Headers': "*",
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST'
+            }
+        }
+
     articles = []
     body = json.loads(event["body"])
     assert "title" in body, "missing title"
@@ -80,7 +90,7 @@ def run_articles_lambda(event):
 
 def lambda_handler(event, context):
     print(event)
-    try:
+    try:    
         run_articles_lambda(event)
     except AssertionError as e:
         print(f"VALUE ERROR: {e}" )
