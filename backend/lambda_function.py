@@ -62,7 +62,7 @@ def get_articles(query: str) -> List[Article]:
 def run_articles_lambda(event):
     articles = []
     body = json.loads(event["body"])
-    assert "title" in body, ValueError("missing title")
+    assert "title" in body, "missing title"
     article = body["title"]
     query = get_search_query(article)
     print(query)
@@ -82,7 +82,7 @@ def lambda_handler(event, context):
     print(event)
     try:
         run_articles_lambda(event)
-    except ValueError as e:
+    except AssertionError as e:
         print(f"VALUE ERROR: {e}" )
         return {
             'statusCode': 400,
