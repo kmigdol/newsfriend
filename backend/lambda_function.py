@@ -80,37 +80,22 @@ def run_articles_lambda(event):
     print(articles)
     return {
         'statusCode': 200,
-        'body': json.dumps(articles),
-        'headers': {
-            'Access-Control-Allow-Headers': "*",
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST'
-        }
+        'body': json.dumps(articles)
     }
 
 def lambda_handler(event, context):
     print(event)
     try:    
-        run_articles_lambda(event)
+        return run_articles_lambda(event)
     except AssertionError as e:
         print(f"VALUE ERROR: {e}" )
         return {
-            'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': "*",
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST'
-            }
+            'statusCode': 400
         }
     except Exception as e:
         print(f"OTHER EXCEPTION {e}")
         return {
-            'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': "*",
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST'
-            }
+            'statusCode': 500
         } 
 
 if __name__ == "__main__":
