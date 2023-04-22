@@ -65,7 +65,6 @@ def run_articles_lambda(event):
             'statusCode': 200
         }
 
-    articles = []
     body = json.loads(event["body"])
     assert "title" in body, "missing title"
     article = body["title"]
@@ -76,6 +75,21 @@ def run_articles_lambda(event):
     return {
         'statusCode': 200,
         'body': json.dumps(articles)
+    }
+
+def get_summary(url: str) -> str:
+    return "summary"
+
+def run_summary_lambda(event):
+    body = json.loads(event["body"])
+    assert "article_url" in body, "missing url"
+    url = body["article_url"]
+    print(url)
+    summary = get_summary(url)
+    print(summary)
+    return {
+        'statusCode': 200,
+        'body': summary
     }
 
 def lambda_handler(event, context):
