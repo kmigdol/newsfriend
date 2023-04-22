@@ -68,9 +68,6 @@ def _get_items_bing(query: str):
         "count": ARTICLE_COUNT
     }
     res = requests.get(BING_URL, params, headers=headers)
-    if "news" not in res.json():
-        print(res.json())
-        raise Exception("Invalid response")
     items = res.json()["webPages"]["value"]
     return items
 
