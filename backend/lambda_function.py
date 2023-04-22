@@ -71,7 +71,7 @@ def _get_items_bing(query: str):
     if "news" not in res.json():
         print(res.json())
         raise Exception("Invalid response")
-    items = res.json()["news"]["value"]
+    items = res.json()["webPages"]["value"]
     return items
 
 def get_articles_google(query: str) -> List[Article]:
