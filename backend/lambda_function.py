@@ -4,11 +4,16 @@ import requests
 import json
 import os
 
-OPENAI_KEY = os.environ['OPENAI_KEY']
+OPENAI_KEY =  os.environ['OPENAI_KEY']
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 GOOGLE_KEY = os.environ["GOOGLE_KEY"]
 GOOGLE_URL = "https://www.googleapis.com/customsearch/v1"
+
+BING_KEY = os.environ["BING_KEY"]
+BING_URL = "https://api.bing.microsoft.com/v7.0/search"
+
+ARTICLE_COUNT = 5
 
 class Article(TypedDict):
     title: str
@@ -41,7 +46,7 @@ def _get_items_google(query: str):
         "key": GOOGLE_KEY,
         "cx": "04f1ed0849d3045b0",
         "q": query,
-        "num": 5
+        "num": ARTICLE_COUNT
     }
 
     for i in range(5):
@@ -54,9 +59,26 @@ def _get_items_google(query: str):
             return items
     return []
 
-def get_articles(query: str) -> List[Article]:
+def _get_items_bing(query: str):
+    headers = {
+        "Ocp-Apim-Subscription-Key": BING_KEY
+    }
+    params = {
+        "q": query,
+        "count": ARTICLE_COUNT
+    }
+    res = requests.get(BING_URL, params, headers=headers)
+    items = res.json()["news"]["value"]
+    return items
+
+def get_articles_google(query: str) -> List[Article]:
     items = _get_items_google(query)
     articles = [{"title": item["title"], "url": item["link"]} for item in items]
+    return articles
+
+def get_articles_bing(query: str) -> List[Article]:
+    items = _get_items_bing(query)
+    articles = [{"title": item["name"], "url": item["url"]} for item in items]
     return articles
 
 def run_articles_lambda(event):
@@ -70,7 +92,7 @@ def run_articles_lambda(event):
     article = body["title"]
     query = get_search_query(article)
     print(query)
-    articles = get_articles(query)
+    articles = get_articles_bing(query)
     print(articles)
     return {
         'statusCode': 200,
@@ -108,5 +130,6 @@ def lambda_handler(event, context):
         } 
 
 if __name__ == "__main__":
-    print(lambda_handler(None, None))
+    res = get_articles_bing("Trump")
+    print(res)
 
