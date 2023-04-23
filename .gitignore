@@ -1,3 +1,4 @@
 python/*
 Pipfile
 Pipfile.lock
+.venv/*
