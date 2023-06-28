@@ -3,7 +3,8 @@ console.log("YES LOADED POPUP");
 
 const lambdaUrl = "https://o45bmhjq3ww4s72qfz7n2drnqa0vwsjh.lambda-url.us-east-2.on.aws/"
 
-const button = document.getElementById("news-button");
+const articlesButton = document.getElementById("article-button");
+const summaryButton = document.getElementById("summary-button");
 const buttonWrapper = document.getElementById("button-wrapper");
 
 recievedHeader = false;
@@ -50,10 +51,18 @@ async function getTitle() {
     return headerText
 }
 
-button.addEventListener('click', function() {
+articlesButton.addEventListener('click', function() {
     console.log("CLICKED");
     getArticles(tabTitle)
 });
+
+summaryButton.addEventListener('click', function() {
+    console.log("CLICKED SUMMARY");
+    chrome.tabs.sendMessage(tabs[0].id, {type: "getText"}, function(response) {
+        console.log("RECIEVED RESPONSE");
+        console.log(response);
+    })
+})
 
 const listContainer = document.getElementById("article-list");
 
@@ -88,16 +97,20 @@ function fillInArticles(articles) {
     listContainer.appendChild(listNode);
 }
 
-// chrome.runtime.onMessage.addListener(
-//     function(request, sender, sendResponse) {
-//         console.log("RECIEVED MESSAGE");
-//         console.log(request);
+function getSummary(text) {
+    console.log(text)
+}
 
-//         if (request.type == "sendHeader") {
-//             getArticles(request.header)
-//         }
-//     }
-// );
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log("RECIEVED MESSAGE")
+        console.log(request)
+
+        if (request.type == "sendText") {
+            getSummary(request.text)
+        }
+    }
+)
 
 window.addEventListener('click',function(e){
     if(e.target.href!==undefined){

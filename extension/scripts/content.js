@@ -21,20 +21,37 @@ async function getHeaderText() {
     return headerText
 }
 
+function getBodyText() {
+    const body = document.body
+    return body.innerText
+}
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        let headerText = getHeaderText()
-        console.log("HEADER TEXT");
-        console.log(headerText);
         console.log("REQUEST");
         console.log(request);
 
         if (request.type == "getHeader") {
+            let headerText = getHeaderText()
+            console.log("HEADER TEXT");
+            console.log(headerText);
             console.log("SENDING HEADER");
+
             chrome.runtime.sendMessage({
                 header: headerText.trim(),
                 type: "sendHeader"
             });
+        }
+
+        if (request.type == "getText") {
+            let bodyText = getBodyText();
+            console.log("BODY TEXT");
+            console.log(bodyText);
+            console.log("SENDING BODY TEXT");
+            chrome.runtime.sendMessage({
+                text: bodyText,
+                type: "sendText"
+            })
         }
     }
 )
