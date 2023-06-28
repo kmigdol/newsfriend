@@ -20,9 +20,7 @@ class Article(TypedDict):
     title: str
     url: str
 
-def get_search_query(headline: str) -> str:
-    prompt = f"Give a neutral search query to find more articles given the headline \"{headline}\""
-
+def make_openai_request(prompt: str) -> dict[str, Any]:
     headers = {"Authorization": f"Bearer {OPENAI_KEY}",
                "Content-Type": "application/json"}
     print(headers)
@@ -40,7 +38,13 @@ def get_search_query(headline: str) -> str:
 
     ret = requests.post(OPENAI_URL, json=payload, headers=headers)
     print(ret.json())
-    return ret.json()['choices'][0]['message']['content']
+    return ret.json()
+
+
+def get_search_query(headline: str) -> str:
+    prompt = f"Give a neutral search query to find more articles given the headline \"{headline}\""
+    res = make_openai_request(prompt)
+    return res['choices'][0]['message']['content']
 
 def _get_items_google(query: str):
     params = {
@@ -101,22 +105,23 @@ def run_articles_lambda(event):
         'body': json.dumps(articles)
     }
 
-def get_summary(url: str) -> str:
-    params = {
-        "SM_API_KEY": SMMRY_KEY,
-        "SM_URL": url
-    }
-    params = collections.OrderedDict(params)
-    params.move_to_end("SM_URL")
-    res = requests.get(SMMRY_URL, params)
+def get_summary(text: str) -> str:
+    prompt = f"parse out and write a one paragraph summary from the following article: {text}"
+    res = make_openai_request(prompt)
 
     return res
 
-def run_summary_lambda(event_body):
-    assert "article_url" in event_body, "missing url"
-    url = event_body["article_url"]
-    print(url)
-    summary = get_summary(url)
+def run_summary_lambda(event):
+    if "body" not in event:
+        return {
+            'statusCode': 200
+        }
+
+    body = json.loads(event["body"])
+    assert "article_text" in body, "missing text"
+    text = body["article_text"]
+    print(text)
+    summary = get_summary(text)
     print(summary)
     return {
         'statusCode': 200,
@@ -125,8 +130,11 @@ def run_summary_lambda(event_body):
 
 def lambda_handler(event, context):
     print(event)
-    try:    
-        return run_articles_lambda(event)
+    try:
+        if "req_type" in event and event["req_type"] == "summary":    
+            return run_summary_lambda(event)
+        else:
+            return run_articles_lambda(event)
     except AssertionError as e:
         print(f"VALUE ERROR: {e}" )
         return {
