@@ -1,17 +1,19 @@
 
+import collections
 from typing import Any, List, TypedDict
 import requests
 import json
 import os
 
-OPENAI_KEY =  os.environ['OPENAI_KEY']
+OPENAI_KEY =  "" # os.environ['OPENAI_KEY']
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
-GOOGLE_KEY = os.environ["GOOGLE_KEY"]
+GOOGLE_KEY = "" # os.environ["GOOGLE_KEY"]
 GOOGLE_URL = "https://www.googleapis.com/customsearch/v1"
 
-BING_KEY = os.environ["BING_KEY"]
+BING_KEY = "" # os.environ["BING_KEY"]
 BING_URL = "https://api.bing.microsoft.com/v7.0/search"
+
 
 ARTICLE_COUNT = 5
 
@@ -100,12 +102,19 @@ def run_articles_lambda(event):
     }
 
 def get_summary(url: str) -> str:
-    return "summary"
+    params = {
+        "SM_API_KEY": SMMRY_KEY,
+        "SM_URL": url
+    }
+    params = collections.OrderedDict(params)
+    params.move_to_end("SM_URL")
+    res = requests.get(SMMRY_URL, params)
 
-def run_summary_lambda(event):
-    body = json.loads(event["body"])
-    assert "article_url" in body, "missing url"
-    url = body["article_url"]
+    return res
+
+def run_summary_lambda(event_body):
+    assert "article_url" in event_body, "missing url"
+    url = event_body["article_url"]
     print(url)
     summary = get_summary(url)
     print(summary)
@@ -130,6 +139,11 @@ def lambda_handler(event, context):
         } 
 
 if __name__ == "__main__":
-    res = get_articles_bing("Trump")
+    event_body = {
+        "article_url": 'http://www.bbc.com/news/business-43298897'
+    }
+    res = get_summary(event_body)
+    breakpoint()
+
     print(res)
 
