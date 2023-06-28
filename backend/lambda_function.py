@@ -5,13 +5,13 @@ import requests
 import json
 import os
 
-OPENAI_KEY =  "" # os.environ['OPENAI_KEY']
+OPENAI_KEY = os.environ['OPENAI_KEY']
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
-GOOGLE_KEY = "" # os.environ["GOOGLE_KEY"]
+GOOGLE_KEY = os.environ["GOOGLE_KEY"]
 GOOGLE_URL = "https://www.googleapis.com/customsearch/v1"
 
-BING_KEY = "" # os.environ["BING_KEY"]
+BING_KEY = os.environ["BING_KEY"]
 BING_URL = "https://api.bing.microsoft.com/v7.0/search"
 
 
@@ -40,8 +40,8 @@ def get_search_query(headline: str) -> str:
     print(payload)
 
     ret = requests.post(OPENAI_URL, json=payload, headers=headers)
-    print(ret)
-    return ret.json()['messages'][0]['content']
+    print(ret.json())
+    return ret.json()['choices'][0]['message']['content']
 
 def _get_items_google(query: str):
     params = {
@@ -94,7 +94,7 @@ def run_articles_lambda(event):
     article = body["title"]
     query = get_search_query(article)
     print(query)
-    articles = get_articles_bing(query)
+    articles = get_articles_google(query)
     print(articles)
     return {
         'statusCode': 200,
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     event_body = {
         "article_url": 'http://www.bbc.com/news/business-43298897'
     }
-    res = get_summary(event_body)
+    res = get_search_query(event_body)
     breakpoint()
 
     print(res)
