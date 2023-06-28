@@ -14,9 +14,6 @@ GOOGLE_URL = "https://www.googleapis.com/customsearch/v1"
 BING_KEY = os.environ["BING_KEY"]
 BING_URL = "https://api.bing.microsoft.com/v7.0/search"
 
-NEWSDATA_KEY = os.environ["NEWSDATA_KEY"]
-NEWSDATA_URL = "https://newsdata.io/api/1/news"
-
 ARTICLE_COUNT = 5
 
 class Article(TypedDict):
@@ -75,14 +72,6 @@ def _get_items_bing(query: str):
     items = res.json()["webPages"]["value"]
     return items
 
-def _get_items_newsdata(query: str):
-    params = {
-        "apikey": NEWSDATA_KEY,
-        "q": query
-    }
-    res = requests.get(NEWSDATA_URL, params)
-    return res.json()
-
 def get_articles_google(query: str) -> List[Article]:
     items = _get_items_google(query)
     print(items)
@@ -94,24 +83,18 @@ def get_articles_bing(query: str) -> List[Article]:
     articles = [{"title": item["name"], "url": item["url"]} for item in items]
     return articles
 
-def get_articles_newsdata(query: str) -> List[Article]:
-    items = _get_items_newsdata(query)
-    articles = [{"title": item["title"], "url": item["link"]} for item in items]
-    return articles
-
 def run_articles_lambda(event):
     if "body" not in event:
         return {
             'statusCode': 200
         }
 
-    # body = json.loads(event["body"])
-    body = event["body"]
+    body = json.loads(event["body"])
     assert "title" in body, "missing title"
     article = body["title"]
     query = get_search_query(article)
     print(query)
-    articles = get_articles_google(query)
+    articles = get_articles_bing(query)
     print(articles)
     return {
         'statusCode': 200,
@@ -157,8 +140,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     query = "Supreme Court Updates"
-    res = _get_items_newsdata(query)
+    res = get_articles_bing(query)
 
-    breakpoint()
     print(res)
 
