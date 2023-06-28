@@ -20,7 +20,7 @@ chrome.tabs.query({ active: true, lastFocusedWindow: true },
         headerNode = document.createTextNode(tabTitle);
 
         if (!recievedHeader) {
-            buttonWrapper.insertBefore(headerNode, button);
+            buttonWrapper.insertBefore(headerNode, summaryButton);
         }
         recievedHeader = true;
     }
@@ -58,9 +58,11 @@ articlesButton.addEventListener('click', function() {
 
 summaryButton.addEventListener('click', function() {
     console.log("CLICKED SUMMARY");
-    chrome.tabs.sendMessage(tabs[0].id, {type: "getText"}, function(response) {
-        console.log("RECIEVED RESPONSE");
-        console.log(response);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "getText"}, function(response) {
+            console.log("RECIEVED RESPONSE");
+            console.log(response);
+        })
     })
 })
 
