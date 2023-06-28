@@ -5,7 +5,7 @@ import requests
 import json
 import os
 
-OPENAI_KEY =  "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" # os.environ['OPENAI_KEY']
+OPENAI_KEY =  "" # os.environ['OPENAI_KEY']
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 GOOGLE_KEY = "" # os.environ["GOOGLE_KEY"]
