@@ -57,8 +57,8 @@ async function getSummary(articleText) {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST'
         }
-    }).then((response) => response.json())
-        .then((json) => console.log(json));
+    }).then((response) => response.text())
+        .then((text) => fillInSummary(text));
 }
 
 async function getTitle() {
@@ -111,6 +111,11 @@ function fillInArticles(articles) {
         listNode.appendChild(entry);
     }
     listContainer.appendChild(listNode);
+}
+
+function fillInSummary(summary) {
+    node = document.createTextNode(summary);
+    listContainer.appendChild(node);
 }
 
 chrome.runtime.onMessage.addListener(

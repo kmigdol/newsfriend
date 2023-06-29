@@ -113,7 +113,7 @@ def run_summary_lambda(body):
     print(summary)
     return {
         'statusCode': 200,
-        'body': summary
+        'body': json.dumps(summary)
     }
 
 def lambda_handler(event, context):
