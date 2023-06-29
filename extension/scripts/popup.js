@@ -49,7 +49,7 @@ async function getSummary(articleText) {
     fetch(lambdaUrl, {
         method: "POST",
         body: JSON.stringify({
-            "title": articleText,
+            "article_text": articleText,
             "req_type": "summary"
         }),
         headers: {

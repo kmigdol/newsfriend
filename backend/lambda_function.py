@@ -87,13 +87,7 @@ def get_articles_bing(query: str) -> List[Article]:
     articles = [{"title": item["name"], "url": item["url"]} for item in items]
     return articles
 
-def run_articles_lambda(event):
-    if "body" not in event:
-        return {
-            'statusCode': 200
-        }
-
-    body = json.loads(event["body"])
+def run_articles_lambda(body):
     assert "title" in body, "missing title"
     article = body["title"]
     query = get_search_query(article)
@@ -111,13 +105,7 @@ def get_summary(text: str) -> str:
 
     return res
 
-def run_summary_lambda(event):
-    if "body" not in event:
-        return {
-            'statusCode': 200
-        }
-
-    body = json.loads(event["body"])
+def run_summary_lambda(body):
     assert "article_text" in body, "missing text"
     text = body["article_text"]
     print(text)
@@ -131,10 +119,16 @@ def run_summary_lambda(event):
 def lambda_handler(event, context):
     print(event)
     try:
-        if "req_type" in event and event["req_type"] == "summary":    
-            return run_summary_lambda(event)
+        if "body" not in event:
+            return {
+                'statusCode': 200
+            }
+
+        body = json.loads(event["body"])
+        if "req_type" in body and body["req_type"] == "summary":    
+            return run_summary_lambda(body)
         else:
-            return run_articles_lambda(event)
+            return run_articles_lambda(body)
     except AssertionError as e:
         print(f"VALUE ERROR: {e}" )
         return {
