@@ -32,7 +32,8 @@ function getArticles(articleTitle) {
     fetch(lambdaUrl, {
         method: "POST",
         body: JSON.stringify({
-            "title": articleTitle
+            "title": articleTitle,
+            "req_type": "articles"
         }),
         headers: {
             "Content-Type": "application/json; charset=UTF-8",
@@ -42,6 +43,22 @@ function getArticles(articleTitle) {
     }).then((response) => response.json())
         .then((json) => fillInArticles(json));
 
+}
+
+async function getSummary(articleText) {
+    fetch(lambdaUrl, {
+        method: "POST",
+        body: JSON.stringify({
+            "title": articleText,
+            "req_type": "summary"
+        }),
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST'
+        }
+    }).then((response) => response.json())
+        .then((json) => console.log(json));
 }
 
 async function getTitle() {
@@ -59,10 +76,7 @@ articlesButton.addEventListener('click', function() {
 summaryButton.addEventListener('click', function() {
     console.log("CLICKED SUMMARY");
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {type: "getText"}, function(response) {
-            console.log("RECIEVED RESPONSE");
-            console.log(response);
-        })
+        chrome.tabs.sendMessage(tabs[0].id, {type: "getText"}, function(response) {})
     })
 })
 
@@ -97,10 +111,6 @@ function fillInArticles(articles) {
         listNode.appendChild(entry);
     }
     listContainer.appendChild(listNode);
-}
-
-function getSummary(text) {
-    console.log(text)
 }
 
 chrome.runtime.onMessage.addListener(
