@@ -103,7 +103,7 @@ def get_summary(text: str) -> str:
     prompt = f"parse out and write a one paragraph summary from the following article: {text}"
     res = make_openai_request(prompt)
 
-    return res
+    return res['choices'][0]['message']['content']
 
 def run_summary_lambda(body):
     assert "article_text" in body, "missing text"
