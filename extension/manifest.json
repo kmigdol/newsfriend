@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "News friend",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Helps you read articles by creating a summary and finding related articles.",
   "icons": {
     "16": "images/Nf-small-16.png",
@@ -12,8 +12,8 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-        "48": "images/icon-48.png",
-        "128": "images/icon-128.png"
+        "48": "images/Nf-small-48.png",
+        "128": "images/Nf-small-128.png"
     }
   },
   "content_scripts": [
