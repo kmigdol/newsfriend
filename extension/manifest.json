@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "News friend",
-  "version": "1.0",
+  "version": "0.0.1",
   "description": "Helps you read articles by creating a summary and finding related articles.",
   "icons": {
     "16": "images/Nf-small-16.png",
