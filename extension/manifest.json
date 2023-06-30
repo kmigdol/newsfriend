@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "News friend",
   "version": "1.0",
-  "description": "Add the reading time to Chrome Extension documentation articles",
+  "description": "Helps you read articles by creating a summary and finding related articles.",
   "icons": {
     "16": "images/Nf-small-16.png",
     "32": "images/Nf-small-32.png",
