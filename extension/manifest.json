@@ -18,7 +18,7 @@
   },
   "content_scripts": [
     {
-        "matches": ["https://*.cnn.com/*", "https://*.nytimes.com/*"],
+        "matches": ["https://*"],
         "js": ["scripts/content.js"]
     }
   ],
