@@ -2,3 +2,4 @@ python/*
 Pipfile
 Pipfile.lock
 .venv/*
+extension.zip
