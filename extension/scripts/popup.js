@@ -17,7 +17,8 @@ chrome.tabs.query({ active: true, lastFocusedWindow: true },
         console.log(tabs[0])
         tabTitle = tabs[0].title
         console.log(tabTitle)
-        containerNode = document.createElement("div")
+        containerNode = document.createElement("div");
+        containerNode.setAttribute("id", "article-title");
         headerNode = document.createTextNode(tabTitle);
         containerNode.appendChild(headerNode);
         containerNode.appendChild(document.createElement("br"));
